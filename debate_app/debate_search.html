@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Debate Audio Search</title>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
+    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        input { padding: 8px; width: 250px; }
+        button { padding: 8px 15px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 4px; }
+        #output { margin-top: 20px; white-space: pre-wrap; background: #f8f9fa; padding: 15px; border-radius: 5px; }
+        .url-link { color: #007bff; text-decoration: none; display: block; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+
+    <h2>ディベート音源検索ツール </h2>
+    <p>カテゴリー（Economy, Educationなど）を入力してください：</p>
+    
+    <input type="text" id="category-input" placeholder="例: Economy">
+    <button py-click="search_videos">検索</button>
+
+    <div id="output"></div>
+
+    <script type="py">
+        from pyscript import document
+
+        # --- ここにCSVの内容をデータとして持たせます ---
+        # 形式: "動画ID,カテゴリー"
+        # CSVをそのまま貼り付けるスタイル
+        csv_text = """
+        _kjeQW-RNyw,artificial intelligence;culture;philosophy
+        _o-XHGe0UAA,military
+        lHL0R4rN9Vg,religion
+        sUH3dnzLMm0,culture;politics
+        m4lxeOCiOys,politics
+        LD4ixYDPuXQ,artificial intelligence;politics
+        RG53F3qSBW8,military
+        Z8ZFbzYE1y0,military
+        c3SrSaGEWg0,media;politics
+        bBuFrywKJVA,technology
+        08Axk2jtq5c,media;narrative
+        SFWz9wKwvuM,artificial intelligence;economics;environment;law;philosophy
+        8hLYp8Ox6MU,nan
+        tCrVGvuPocs,artificial intelligence;education;philosophy;politics
+        _hOn3KFxqlI,philosophy
+        AgF79eQluvw,philosophy
+        GB5vfh7x2bE,media
+        Pak7I10BKCA,education;environment;media;narrative
+        yLCQ_rp6YKM,artificial intelligence;culture;development;media
+        ayBAkyu2qJA,artificial intelligence;culture
+        5ReipJ8VY6I,nan
+        jhZJYUIgfQk,artificial intelligence;conflict;law;military;politics
+        epA2rsWyP38,nan
+        Sdzo-MTsors,nan
+        JeW_hOW70sw,artificial intelligence;environment;tourism
+        z-psm84s6Q8,philosophy;sport
+        iF7HKl7oNlM,philosophy;sport
+        PNjaMg56KgY,artificial intelligence;conflict;economics;politics
+        x1Im_6L-gCA,economics;politics
+        Xvazburi7aU,media;politics
+        h5Xw3opE1wA,artificial intelligence;media;politics
+        7gr5gOfP-40,artificial intelligence;media;politics
+        PmUAh2qfGwY,artificial intelligence;conflict;politics
+        wV7x8P2kefI,artificial intelligence;conflict;politics
+        45n0fT8Cyak,artificial intelligence;conflict;law;military
+        YI89yBO-lhE,artificial intelligence;conflict;law;military
+        WM7e0YtXRI8,artificial intelligence;conflict;culture;education;religion
+        qVijCSdOIoo,artificial intelligence;culture;education;religion
+        oy_zE6G7Qzs,media
+        YVj0Zl6w0Xo,politics
+        4xF5Nu675PE,politics
+        5Elgthsky4E,artificial intelligence
+        zuscRZBlwG8,artificial intelligence;conflict;politics
+        zcyN2x02PnY,nan
+        7AM3EHo9sAE,artificial intelligence;conflict;philosophy
+        v1Gmk0VQ-ho,artificial intelligence
+        w7Wk1qXj2ZA,artificial intelligence
+        mw8PVl0Golw,artificial intelligence;military
+        zFbXK6afiH8,artificial intelligence;conflict;philosophy
+        gFmy_3UhuBw,artificial intelligence;conflict;philosophy
+        NcSI-Z-Qovg,education;politics
+        48H6CIIDTOk,artificial intelligence;economics
+        WpUhmYVB9JY,artificial intelligence;politics
+        ImR8juaLda0,education
+        liPdIzvAEOI,nan
+        PeLR85dXar0,artificial intelligence;politics
+        0tHTgIvgB-w,artificial intelligence;development;economics;philosophy
+        5ib1X2Se5Ss,nan
+        Xoms3oYeojg,philosophy
+        kevL_Fe_WdY,artificial intelligence;philosophy
+        sSKW12HTFAY,artificial intelligence
+        xQT85N4kCnw,artificial intelligence;criminal justice system;economics;environment;media;philosophy;politics;social movement
+        aK94FKyD9Dw,philosophy
+        qiic5jUhpos,criminal justice system;economics;environment;media;philosophy;politics;social movement
+        JuS2PIQFivM,nan
+        0sI3Nokqq7g,nan
+        upvkScE5xAQ,artificial intelligence;criminal justice system
+        Eo6fhTY4jO8,artificial intelligence;media;philosophy
+        jZDK4L7Z2jA,philosophy
+        WZwRRnzYQTk,nan
+        3MELfhiHd-s,artificial intelligence;media
+        ekcu7wxumxg,media;philosophy;social movement
+        f2YZJfJe0UA,media;philosophy
+        1ncTrQib18U,animal right;media
+        FWIqj_04lfM,education;media;philosophy
+        u7Id-KddhyE,media
+        KgjZc3NXxv8,media;sport
+        zGCy-dNXCPA,media;philosophy
+        7a_cEsiUcrg,development;media;philosophy;social movement
+        r9ZGZAEVarI,media;technology
+        _AGoAYrB_HA,artificial intelligence;media
+        IUK225iFPL4,media;philosophy
+        EBo0lRLEIrQ,artificial intelligence;education;social movement
+        rD-jUWdPggY,education;law
+        iil_1rVe3uY,artificial intelligence;education;environment;social movement;technology
+        GhbSMRtSq2E,nan
+        OWV72USXoxc,nan
+        aRe5jkcDs4g,nan
+        -RsrNNcsOUQ,environment;philosophy;social movement
+        77xtZryub3A,environment;philosophy;social movement
+        c3aJGBuipsI,environment;philosophy;social movement
+        XcA2lOjVS3o,artificial intelligence;conflict;education;environment;medical;philosophy
+        qJHuabMMm3Q,artificial intelligence;education;politics
+        i9iey9UIfV4,education;philosophy;politics
+        fH6UfAZXRIY,artificial intelligence;education;media;philosophy;politics;technology
+        9z9vE8se30Q,artificial intelligence;conflict;criminal justice system;philosophy
+        WhUT16hNgaU,conflict;international relation;politics;religion;technology
+        B_Sy1kUs3Pg,artificial intelligence;law
+        Acf290HPHVs,artificial intelligence
+        AesMdpZ9pyM,economics;education;law;religion
+        dGTB4MgPK-o,nan
+        w-vh3L6JaPw,artificial intelligence
+        WdrfJwQTK-A,artificial intelligence;religion
+        VYi0ZPM8__g,artificial intelligence;religion
+        X-YfGAuqLiA,animal right;artificial intelligence
+        zJqukURpK44,economics
+        zCVgJrH0zLo,artificial intelligence
+        GOhjOmif-f4,animal right;artificial intelligence
+        7LpOo_YrCPo,law;philosophy;politics
+        4RS-9jOrmmU,artificial intelligence;law;philosophy;politics
+        9kamPalJAbU,artificial intelligence;economics
+        EAMU2jcYOW8,military
+        5Jf-0rAePcM,law;narrative;philosophy
+        VZiO6G9dRK0,artificial intelligence;economics;international relation;politics
+        d1_5-9ZRWMM,artificial intelligence;economics;international relation;politics
+        oJZK-K0W3aI,artificial intelligence;economics;international relation;politics
+        rE4shgqnUfA,artificial intelligence;economics;international relation;politics
+        dQZ2GG0Tuug,economics;narrative
+        hG-A8zXym9o,nan
+        QfI-GBZfOJg,artificial intelligence;economics;narrative
+        S6gTVkdFyEc,economics;narrative
+        1mCp3R7zMhE,law;politics
+        OXuW9wQVuZQ,law;politics
+        5pe9VvHTZ3E,law;politics
+        6CBHEdxUPA4,law;politics
+        XAhTD6gLvoc,law;politics
+        zHmpM5ImjHM,education;philosophy
+        8CCwC-tV9yE,artificial intelligence;politics
+        CHlnh6GCBSA,philosophy;social movement
+        5VcB_C52TLM,law
+        U2UeEtIXbJQ,artificial intelligence;conflict;philosophy;politics
+        tHwssRROw-8,culture
+        XYqMTmG2kho,culture;education;media
+        7vBW9OQ5Fqo,technology
+        WkaIFhmNZ9Y,law;politics;technology
+        BjPXNr9Jf0Y,artificial intelligence
+        ZjZeEWILHAc,media
+        j0Y4Yi6YQsk,nan
+        cl6fSukqeIg,artificial intelligence
+        S6CAyZPSiFQ,conflict
+        x1uANEWOOi0,religion
+        h_1T2s-DfOE,religion
+        mR6UTag8Fss,artificial intelligence;education;politics
+        IUgHBLTz8N8,artificial intelligence;politics
+        Fylag_yuIpY,artificial intelligence;education
+        CpZ1fGPRDso,artificial intelligence;economics;education;politics
+        w6sOGU6dob4,nan
+        EhBU5FzYAiY,artificial intelligence;environment;philosophy;social movement
+        LBTwNDoII64,artificial intelligence;education;environment;philosophy;social movement
+        DOm_nnzw1GA,artificial intelligence;environment;philosophy;social movement
+        61n_2BRtkAA,artificial intelligence;education
+        W0M2-Zc8XZs,philosophy;social movement
+        eOJc-vJo1lM,economics;politics
+        yc8X4p1WRUY,nan
+        GG2OQIP5tCs,artificial intelligence;criminal justice system;military;narrative
+        P28WviPguF8,artificial intelligence;medical
+        RKl7nKNQDA8,nan
+        rkwnfceH9lc,artificial intelligence
+        vLCeEj5Ja5c,artificial intelligence;environment;philosophy;social movement
+        oaFoWHja-FU,artificial intelligence
+        YSGtVcuXgC0,artificial intelligence;development
+        sOsuO2mYyJw,nan
+        pdTZNWa30pM,artificial intelligence
+        LPp5qmAoiT8,artificial intelligence
+        d7sXHjsfqlU,artificial intelligence
+        Skcsu-xQ8Lc,artificial intelligence
+        VN9-oyS0wvQ,artificial intelligence;economics;politics
+        OF0jrZgwZLU,artificial intelligence
+        Bd6_kFtXaJ8,artificial intelligence
+        73dNFvAAWGU,artificial intelligence
+        NbbQx2-Li-8,nan
+        f0cu0gC88aY,international relation
+        RkvpyqTOCiI,artificial intelligence;media
+        8hUpMhGwTK8,culture;media;sport
+        1gcfO3B0uII,international relation;law;philosophy
+        CCrGDBv6wnQ,nan
+        GnSVqvckjqc,education;politics
+        ZdQOGy7VG7E,philosophy;politics
+        8z-MilT9Xxk,nan
+        R8mi57TV_bQ,law
+        skpEVt2DIr4,nan
+        pHn2mfEU2RU,artificial intelligence;philosophy;religion
+        1PEa1bFBFwQ,artificial intelligence
+        HbUuO9JU9I8,artificial intelligence;military;politics
+        HnNvru9gv7w,artificial intelligence;military;politics
+        3Ut7xUb1j2o,religion
+        tcfMGIIzNi0,artificial intelligence
+        cC4odKuaqNU,medical
+        XXwjCSVm5LA,artificial intelligence;philosophy
+        -oOzFvrQrpg,nan
+        LMXVMsrDd6U,artificial intelligence;environment;technology
+        ribo6vdRcCQ,philosophy
+        1KwkQtJfBGM,artificial intelligence;law;narrative
+        Yi-ixUgQSCY,conflict;philosophy
+        busPlIIMmQs,nan
+        cOudIRuwH3Q,artificial intelligence;culture
+        5WHTtpI7fl8,education;philosophy
+        RBZYtBZaFZs,military
+        SPAdfcgHLsI,law;philosophy
+        EFiRvYvrUUE,education;law;philosophy;social movement
+        iCGpUH29ncQ,artificial intelligence;politics
+        hT_OBl8vbfs,artificial intelligence;military;philosophy;religion
+        BSNicw4uYKA,military;politics
+        zedO2PiDJz0,artificial intelligence;politics;religion
+        CZMgmKUP-i4,artificial intelligence;criminal justice system;law;politics
+        TGGg3jlhaKg,politics
+        5fpYb5QqpMY,narrative
+        w-1mFL_uU1o,law
+        apAPHapPA-E,artificial intelligence;law
+        Jnm1UfBJ3B8,artificial intelligence;law;media;politics;social movement
+        kZw07BD5Z-0,philosophy
+        DzWv0vetnd0,artificial intelligence
+        9eCLY8TYHVw,nan
+        7nDdyYP3BVk,nan
+        k_UXsKYo1VQ,law
+        440-yx9tFPg,artificial intelligence;politics
+        PIploGXuYAY,artificial intelligence;international relation;military
+        RvY0G95iFeU,economics;philosophy;politics
+        FzFqEGvHHJQ,nan
+        jsxg0v2In4U,law
+        GK5vsH01cDA,nan
+        SJsigF16Q3s,law
+        BqQR_mCjUgM,nan
+        6Mj-bOzGYLU,philosophy
+        9OkLZNeOMK0,development;politics
+        wFYDsFrd_Po,artificial intelligence;social movement
+        dwAhU0u5AcI,philosophy;politics
+        WXLx-Z_8z6s,economics;sport
+        _8KF10g_Nuo,development;international relation;philosophy
+        -g64rPvHGAo,economics;international relation;law;social movement
+        -6RacXkX6TQ,narrative;philosophy
+        MoynLyIBhF4,development
+        zFA_QSfXkOo,artificial intelligence;international relation;philosophy;social movement
+        67KeqiiiM0w,culture;military;philosophy;politics;religion
+        NsgXAb6XEVs,nan
+        ls4ReSzO_VI,artificial intelligence;criminal justice system
+        aZMcr3kYXSs,artificial intelligence
+        t2UF5iSubw4,nan
+        kN2YcVis7F4,artificial intelligence
+        oFtIfWYM99E,economics;finance
+        """.strip()
+
+        # 貼り付けた文字をリストに変換する処理
+        DEBATE_DATA = csv_text.split("\n")
+
+        def search_videos(event):
+            # 入力を取得
+            target = document.querySelector("#category-input").value.strip().lower()
+            output_div = document.querySelector("#output")
+            output_div.innerHTML = "" # 前回の結果をクリア
+
+            if not target:
+                output_div.innerText = "カテゴリーを入力してください。"
+                return
+
+            results_found = False
+            
+            for line in DEBATE_DATA:
+                line = line.strip()
+                if not line:  # 空行をスキップ
+                    continue
+                
+                try:
+                    parts = line.split(",")
+                    if len(parts) != 2:
+                        continue
+                    video_id, category = parts
+                    
+                    if target in category.lower():
+                        # HTML要素としてリンクを作成
+                        url = f"https://www.youtube.com/watch?v={video_id}"
+                        link_html = f'<a href="{url}" target="_blank" class="url-link">🔗 URL: {url}</a>'
+                        output_div.innerHTML += link_html
+                        results_found = True
+                except Exception as e:
+                    print(f"エラー: {e}")
+
+            if not results_found:
+                output_div.innerText = f"「{target}」に該当する動画は見つかりませんでした。"
+    </script>
+
+</body>
+</html>

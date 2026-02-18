@@ -1,0 +1,4 @@
+packages = []
+
+[build]
+includes = ["search_debate.py"]

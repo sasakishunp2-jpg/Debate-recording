@@ -1,0 +1,48 @@
+Last login: Fri Jan 30 15:56:20 on console
+shunsasaki@sasakishunnoMacBook-Air ~ % python3 --version
+Python 3.15.0a6
+shunsasaki@sasakishunnoMacBook-Air ~ % cd ~/Desktop
+mkdir debate_app
+cd debate_app
+shunsasaki@sasakishunnoMacBook-Air debate_app % nano test.py
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  UW PICO 5.09                     File: test.py                      Modified  
+
+print("Pythonの準備が完了しました！")
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+^G Get Help  ^O WriteOut  ^R Read File ^Y Prev Pg   ^K Cut Text  ^C Cur Pos   
+^X Exit      ^J Justify   ^W Where is  ^V Next Pg   ^U UnCut Text^T To Spell  
