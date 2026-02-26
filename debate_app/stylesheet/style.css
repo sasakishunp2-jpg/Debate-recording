@@ -5,7 +5,7 @@ body {
     padding: 20px;
     line-height: 1.6;
     /* 画像のファイル名を正確に指定（例: bg.jpg など） */
-    background-image: url('DEBATE _APP/prague cafe.JPG'); 
+    background-image: url('../prague.JPG'); 
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
