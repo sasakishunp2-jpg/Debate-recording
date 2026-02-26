@@ -2,3 +2,6 @@ packages = []
 
 [build]
 includes = ["search_debate.py"]
+
+[[fetch]]
+files = ["debate_data.csv"]
