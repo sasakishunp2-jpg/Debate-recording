@@ -1,0 +1,54 @@
+/* 背景画像の設定 */
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 20px;
+    line-height: 1.6;
+    /* 画像のファイル名を正確に指定（例: bg.jpg など） */
+    background-image: url('prague cafe.JPG'); 
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    color: #333;
+}
+
+/* 白い半透明のコンテナ（文字を読みやすくするため） */
+.container {
+    background-color: rgba(255, 255, 255, 0.85); 
+    padding: 30px;
+    border-radius: 15px;
+    max-width: 500px;
+    margin: 40px auto; /* 上下に少し余白 */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* 入力・選択・ボタンのデザイン */
+input, select, button {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#output {
+    margin-top: 20px;
+    white-space: pre-wrap;
+}
+
+.url-link {
+    color: #007bff;
+    display: block;
+    margin-bottom: 10px;
+    text-decoration: none;
+}
