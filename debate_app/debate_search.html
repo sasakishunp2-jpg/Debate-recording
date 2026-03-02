@@ -11,7 +11,7 @@
 <body>
 <div class="container">
     <h2>ディベート音源検索ツール </h2> 
-    <p>カテゴリーを選択してください：</p>
+    <p>Choose motion type：</p>
     <select id="category-input">
         <option value="">-- カテゴリーを選んでください --</option>
         <option value="conflict">Conflict</option>
@@ -53,13 +53,13 @@
             output_div.innerHTML = ""
 
             if not target:
-                output_div.innerText = "カテゴリーを選択してください。"
+                output_div.innerText = "Choose motion type."
                 return
 
             results_found = False
 
             try:
-                with open("debate_datatitle.csv", mode="r", encoding="utf-8") as f:
+                with open("debate_data3.csv", mode="r", encoding="utf-8") as f:
                     reader = csv.reader(f, quotechar='"', skipinitialspace=True)
                     for row in reader:
                         # 4項目あるかチェック（データ不足によるエラー防止）
@@ -79,18 +79,18 @@
                             result_item = f"""
                             <div style="margin-bottom: 20px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
                                 <h3 style="margin: 5px 0; color: #333;">{title}</h3>
-                                <p style="margin: 5px 0; font-size: 0.9em; color: #666;">論題: {topic}</p>
-                                <a href="{url}" target="_blank" class="url-link">🎬 動画を視聴する</a>
+                                <p style="margin: 5px 0; font-size: 0.9em; color: #666;">Motion: {topic}</p>
+                                <a href="{url}" target="_blank" class="url-link">🎬 Watch debate</a>
                             </div>
                             """
                             output_div.innerHTML += result_item
                             results_found = True
 
             except Exception as e:
-                output_div.innerText = f"エラーが発生しました: {e}"
+                output_div.innerText = f"Error occurred: {e}"
 
             if not results_found:
-                output_div.innerText = f"「{target}」に該当する動画は見つかりませんでした。"
+                output_div.innerText = f"No videos found for the motion type '{target}'."
     </script>
 
 </body>
