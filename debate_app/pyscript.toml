@@ -4,4 +4,6 @@ packages = []
 includes = ["search_debate.py"]
 
 [[fetch]]
+# リモート（GitHub等）でもローカルでも確実に読み込むための書き方
+from = "./"
 files = ["debate_data4.csv"]
