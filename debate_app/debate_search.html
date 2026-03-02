@@ -13,7 +13,7 @@
     <h2>ディベート音源検索ツール </h2> 
     <p>Choose motion type：</p>
     <select id="category-input">
-        <option value="">-- カテゴリーを選んでください --</option>
+        <option value="">-- Choose motion type --</option>
         <option value="conflict">Conflict</option>
         <option value="economics">Economics</option>
         <option value="education">Education</option>
@@ -61,7 +61,13 @@
             try:
                 with open("debate_data4.csv", mode="r", encoding="utf-8") as f:
                     reader = csv.reader(f, quotechar='"', skipinitialspace=True)
+                    header_skip = True
                     for row in reader:
+                        # ヘッダー行をスキップ
+                        if header_skip:
+                            header_skip = False
+                            continue
+                        
                         # 4項目あるかチェック（データ不足によるエラー防止）
                         if not row or len(row) < 4: continue 
 
@@ -71,7 +77,7 @@
                         topic    = row[2] # 論題
                         category = row[3] # カテゴリー（ここで検索の判定をする）
 
-                        # 3番目の「カテゴリー」に対して検索を行う
+                        # カテゴリーに対して検索を行う（複数のカテゴリーに対応）
                         if target in category.lower():
                             url = f"https://www.youtube.com/watch?v={video_id}"
                             
