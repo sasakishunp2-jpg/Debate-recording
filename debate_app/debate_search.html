@@ -38,7 +38,7 @@
         <option value="artificial intelligence">Artificial Intelligence</option>
         <option value="tourism">Tourism</option>
     </select>
-    <button py-click="search_videos">検索</button>
+    <button py-click="search_videos">Search</button>
 
     <div id="output"></div>
 
@@ -60,23 +60,24 @@
 
             try:
                 with open("debate_data4.csv", mode="r", encoding="utf-8") as f:
-                    reader = csv.reader(f, quotechar='"', skipinitialspace=True)
+                    # quotecharをダブルクォーテーション（デフォルト）に戻す
+                    reader = csv.reader(f, skipinitialspace=True)
                     header_skip = True
                     for row in reader:
-                        # ヘッダー行をスキップ
                         if header_skip:
                             header_skip = False
                             continue
+
+                        # 列が足りない場合はスキップ
+                        if len(row) < 4:
+                            continue
+
+                        # インデックスをCSVの並びに正確に合わせる
+                        video_id = row[0].strip()
+                        title    = row[1].strip()
+                        topic    = row[2].strip()
+                        category = row[3].strip() # ここに "philosophy, culture" が入る
                         
-                        # 4項目あるかチェック（データ不足によるエラー防止）
-                        if not row or len(row) < 4: continue 
-
-                        # CSVの並び順に合わせて番号を指定
-                        video_id = row[0] # ID
-                        title    = row[1] # タイトル
-                        topic    = row[2] # 論題
-                        category = row[3] # カテゴリー（ここで検索の判定をする）
-
                         # カテゴリーに対して検索を行う（複数のカテゴリーに対応）
                         if target in category.lower():
                             url = f"https://www.youtube.com/watch?v={video_id}"
