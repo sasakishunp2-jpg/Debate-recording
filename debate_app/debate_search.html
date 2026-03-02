@@ -44,41 +44,50 @@
 
  </div> 
     <script type="py">
-        from pyscript import document
-        import csv
-
         def search_videos(event):
-            target = document.querySelector("#category-input").value.strip().lower()
-            output_div = document.querySelector("#output")
-            output_div.innerHTML = ""
-            
-            if not target:
-                output_div.innerText = "カテゴリーを入力してください。"
-                return
+    target = document.querySelector("#category-input").value.strip().lower()
+    output_div = document.querySelector("#output")
+    output_div.innerHTML = ""
 
-            results_found = False
-            
-            # CSVファイルを直接読み込む処理
-            try:
-                with open("debate_data.csv", mode="r", encoding="utf-8") as f:
-                    reader = csv.reader(f)
-                    for row in reader:
-                        # 空行を飛ばす
-                        if not row: continue
-                        
-                        video_id = row[0]
-                        category = row[1]
+    if not target:
+        output_div.innerText = "カテゴリーを選択してください。"
+        return
 
-                        if target in category.lower():
-                            url = f"https://www.youtube.com/watch?v={video_id}"
-                            link_html = f'<a href="{url}" target="_blank" class="url-link">🔗 {url}</a>'
-                            output_div.innerHTML += link_html
-                            results_found = True
-            except Exception as e:
-                output_div.innerText = f"エラーが発生しました: {e}"
+    results_found = False
 
-            if not results_found:
-                output_div.innerText = f"「{target}」に該当する動画は見つかりませんでした。"
+    try:
+        with open("debate_data.csv", mode="r", encoding="utf-8") as f:
+            reader = csv.reader(f)
+            for row in reader:
+                # 4項目あるかチェック（データ不足によるエラー防止）
+                if not row or len(row) < 4: continue 
+
+                # CSVの並び順に合わせて番号を指定
+                video_id = row[0] # ID
+                title    = row[1] # タイトル
+                topic    = row[2] # 論題
+                category = row[3] # カテゴリー（ここで検索の判定をする）
+
+                # 3番目の「カテゴリー」に対して検索を行う
+                if target in category.lower():
+                    url = f"https://www.youtube.com/watch?v={video_id}"
+                    
+                    # 検索結果の表示を作成
+                    result_item = f"""
+                    <div style="margin-bottom: 20px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+                        <h3 style="margin: 5px 0; color: #333;">{title}</h3>
+                        <p style="margin: 5px 0; font-size: 0.9em; color: #666;">論題: {topic}</p>
+                        <a href="{url}" target="_blank" class="url-link">🎬 動画を視聴する</a>
+                    </div>
+                    """
+                    output_div.innerHTML += result_item
+                    results_found = True
+
+    except Exception as e:
+        output_div.innerText = f"エラーが発生しました: {e}"
+
+    if not results_found:
+        output_div.innerText = f"「{target}」に該当する動画は見つかりませんでした。"
     </script>
 
 </body>
