@@ -60,7 +60,7 @@
 
             try:
                 with open("debate_datatitle.csv", mode="r", encoding="utf-8") as f:
-                    reader = csv.reader(f)
+                    reader = csv.reader(f, quotechar='"', skipinitialspace=True)
                     for row in reader:
                         # 4項目あるかチェック（データ不足によるエラー防止）
                         if not row or len(row) < 4: continue 
