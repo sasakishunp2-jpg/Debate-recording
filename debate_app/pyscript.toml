@@ -4,4 +4,8 @@ packages = []
 includes = ["search_debate.py"]
 
 [[fetch]]
-files = ["debate_data.csv"]
+files = ["debate_datatitle.csv"]
+# debate_datatitle.csv contains ID, title, topic, and category
+# kept original line for reference or backwards compatibility
+# [[fetch]]
+# files = ["debate_data.csv"]
