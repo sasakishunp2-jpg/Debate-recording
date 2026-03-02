@@ -64,6 +64,7 @@
                     reader = csv.reader(f, skipinitialspace=True)
                     header_skip = True
                     for row in reader:
+                        print(f"読み込み中: {row}")
                         if header_skip:
                             header_skip = False
                             continue
