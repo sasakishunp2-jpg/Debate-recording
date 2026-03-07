@@ -6,4 +6,4 @@ includes = ["search_debate.py"]
 [[fetch]]
 # リモート（GitHub等）でもローカルでも確実に読み込むための書き方
 from = "./"
-files = ["classified_videolist_semantic_v2.csv"]
+files = ["newestversion.csv"]
