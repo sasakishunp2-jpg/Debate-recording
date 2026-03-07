@@ -7,10 +7,41 @@
     <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
     <py-config src="./pyscript.toml"></py-config>
     <style>
-    /* 右側：変更内容表示パネル（サイドポップアップ風） */
+    /* 右側：変更内容表示パネル（固定サイドパネル） */
         .side-panel {
-            width: 350px; background: var(--panel-bg); border-left: 1px solid #e2e8f0;
-            padding: 30px; overflow-y: auto; box-shadow: -4px 0 15px rgba(0,0,0,0.05);
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            width: 350px;
+            background: var(--panel-bg);
+            border-left: 1px solid #e2e8f0;
+            padding: 30px;
+            overflow-y: auto;
+            box-shadow: -8px 0 24px rgba(0,0,0,0.08);
+            z-index: 1000;
+            transform: translateX(100%); /* 非表示（右へオフスクリーン） */
+            transition: transform 0.25s ease;
+        }
+        .side-panel.open { transform: translateX(0); }
+        /* トグルボタン */
+        .side-toggle {
+            position: fixed; top: 16px; right: 16px; z-index: 1100;
+            background: #0ea5a0; color: white; border: none; padding: 10px 12px;
+            border-radius: 8px; cursor: pointer; box-shadow: 0 6px 18px rgba(6,95,70,0.12);
+            font-weight: 700;
+        }
+        .side-close {
+            position: absolute; top: 12px; right: 12px; background: transparent; border: none; color: #64748b; cursor: pointer;
+            font-size: 14px;
+        }
+        @media (max-width: 780px) {
+            .side-panel {
+                width: 100%; height: 50vh; top: auto; bottom: 0; right: 0;
+                border-left: none; border-top: 1px solid #e2e8f0;
+            }
+            .side-panel { transform: translateY(100%); }
+            .side-panel.open { transform: translateY(0); }
         }
         .version-badge {
             background: #dcfce7; color: #166534; padding: 4px 12px;
@@ -56,6 +87,23 @@
 
     <div id="output"></div>
 
+    <!-- サイドパネル用トグルボタン（必要時に開く） -->
+    <button id="side-toggle" class="side-toggle" aria-expanded="false" aria-controls="side-panel">表示</button>
+
+    <!-- 右側サイドパネル（初期は非表示、開くと表示） -->
+    <aside id="side-panel" class="side-panel" role="region" aria-hidden="true">
+        <button id="side-close" class="side-close" aria-label="閉じる">✕</button>
+        <div style="margin-top:18px">
+            <span class="version-badge">v1.0</span>
+        </div>
+        <div style="margin-top:18px">
+            <div class="change-log-item">
+                <div class="change-log-title">使い方</div>
+                <div class="change-log-desc">「表示」ボタンを押すとこのパネルが開き、検索結果や補足情報を表示できます。</div>
+            </div>
+        </div>
+    </aside>
+
  </div> 
     <script type="py">
         import csv
@@ -66,8 +114,33 @@
             output_div = document.querySelector("#output")
             output_div.innerHTML = ""
 
-            if not target:
-                output_div.innerText = "Choose motion type."
+        <script>
+            document.addEventListener('DOMContentLoaded', function(){
+                const toggle = document.getElementById('side-toggle');
+                const panel = document.getElementById('side-panel');
+                const closeBtn = document.getElementById('side-close');
+
+                function openPanel(){
+                    panel.classList.add('open');
+                    panel.setAttribute('aria-hidden','false');
+                    toggle.setAttribute('aria-expanded','true');
+                }
+                function closePanel(){
+                    panel.classList.remove('open');
+                    panel.setAttribute('aria-hidden','true');
+                    toggle.setAttribute('aria-expanded','false');
+                }
+
+                toggle.addEventListener('click', function(){
+                    if(panel.classList.contains('open')) closePanel(); else openPanel();
+                });
+                closeBtn.addEventListener('click', closePanel);
+                document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closePanel(); });
+            });
+        </script>
+    
+    </body>
+    </html>
                 return
 
             results_found = False
