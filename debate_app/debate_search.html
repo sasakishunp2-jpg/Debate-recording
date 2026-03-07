@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="stylesheet/style.css">
     <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
     <py-config src="./pyscript.toml"></py-config>
-    
 
 </head>
 <body>
@@ -43,23 +42,6 @@
 
     <div id="output"></div>
 
-    <!-- サイドパネル用トグルボタン（必要時に開く） -->
-    <button id="side-toggle" class="side-toggle" aria-expanded="false" aria-controls="side-panel">表示</button>
-
-    <!-- 右側サイドパネル（初期は非表示、開くと表示） -->
-    <aside id="side-panel" class="side-panel" role="region" aria-hidden="true">
-        <button id="side-close" class="side-close" aria-label="閉じる">✕</button>
-        <div style="margin-top:18px">
-            <span class="version-badge">v1.0</span>
-        </div>
-        <div style="margin-top:18px">
-            <div class="change-log-item">
-                <div class="change-log-title">使い方</div>
-                <div class="change-log-desc">「表示」ボタンを押すとこのパネルが開き、検索結果や補足情報を表示できます。</div>
-            </div>
-        </div>
-    </aside>
-
  </div> 
     <script type="py">
         import csv
@@ -70,33 +52,8 @@
             output_div = document.querySelector("#output")
             output_div.innerHTML = ""
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function(){
-                const toggle = document.getElementById('side-toggle');
-                const panel = document.getElementById('side-panel');
-                const closeBtn = document.getElementById('side-close');
-
-                function openPanel(){
-                    panel.classList.add('open');
-                    panel.setAttribute('aria-hidden','false');
-                    toggle.setAttribute('aria-expanded','true');
-                }
-                function closePanel(){
-                    panel.classList.remove('open');
-                    panel.setAttribute('aria-hidden','true');
-                    toggle.setAttribute('aria-expanded','false');
-                }
-
-                toggle.addEventListener('click', function(){
-                    if(panel.classList.contains('open')) closePanel(); else openPanel();
-                });
-                closeBtn.addEventListener('click', closePanel);
-                document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closePanel(); });
-            });
-        </script>
-    
-    </body>
-    </html>
+            if not target:
+                output_div.innerText = "Choose motion type."
                 return
 
             results_found = False
